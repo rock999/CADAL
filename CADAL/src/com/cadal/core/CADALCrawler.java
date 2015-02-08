@@ -2,20 +2,18 @@ package com.cadal.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 
+import com.cadal.common.FileHelper;
 import com.cadal.common.LogTools;
+import com.cadal.common.TimeUtility;
 import com.cadal.model.OperationStatus;
 
 public class CADALCrawler {
@@ -27,65 +25,34 @@ public class CADALCrawler {
 	}
 
 	private void demo() {
-		int a1[] = { 1, 2, 3 };
-		int a2[] = { 4, 5, 6 };
-		int a3[] = { 7, 8, 9 };
-		int a4[] = { 10, 11, 12 };
-		int a5[] = { 13, 14, 15 };
-		int aa[][] = { a1, a2, a3, a4, a5 };
-		new CADALScheduler(aa);
+		new CADALScheduler();
 	}
 }
 
 class CADALScheduler {
-	int data[][];
-	int ThreadMaxSize = 100;
+	int ThreadMaxSize = 10;
 	CyclicBarrier barrier = null;
+	static FileHelper fileHelper = new FileHelper();
 
-	public CADALScheduler(int[][] data) {
-		this.data = data;
-		ThreadMaxSize = 100;
+	public CADALScheduler() {
+
+		// record startup time
+		fileHelper.writeDataToFile("log", "run.log",
+				TimeUtility.getCurrentTimeStr(), "UTF-8");
+
 		ExecutorService ex = Executors.newFixedThreadPool(ThreadMaxSize);
 
-		List<String> bookIDSet = null;
-
-		// for(String bookID:bookIDSet)
-		// {
-		//
-		// }
-
 		barrier = new CyclicBarrier(ThreadMaxSize);
-		Callable<Integer> task = null;
-		List<Future<Integer>> resultList = new ArrayList<Future<Integer>>();
+		Callable<OperationStatus> task = null;
+		List<Future<OperationStatus>> resultList = new ArrayList<Future<OperationStatus>>();
 		for (int i = 0; i < ThreadMaxSize; i++) {
-			task = new Worker("", "", barrier);
-			Future<Integer> result = ex.submit(task);
+			task = new Worker(barrier);
+			Future<OperationStatus> result = ex.submit(task);
 			resultList.add(result);
 		}
 
-		int flagNum = 0;
-		boolean invalidIP = false;
-		boolean invalidAccount = false;
-
-		for (Future<Integer> futrueTask : resultList) {
-			try {
-				flagNum = futrueTask.get(15, TimeUnit.MINUTES);
-				if (OperationStatus.INVALIDIP == flagNum)
-					invalidIP = true;
-				if (OperationStatus.INVALIDACCOUNT == flagNum)
-					invalidAccount = true;
-
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			} catch (TimeoutException e) {
-				e.printStackTrace();
-			}
-		}
-
 		System.out.println("Is Barrier broken : " + barrier.isBroken());
-		System.out.println("Grand total is : " + flagNum);
+		System.out.println("endtime:" + TimeUtility.getCurrentTimeStr());
 		ex.shutdown();
 	}
 }
@@ -98,22 +65,23 @@ class CADALScheduler {
  * 
  */
 
-class Worker implements Callable<Integer> {
+class Worker implements Callable<OperationStatus> {
 	CyclicBarrier barrier;
-	String bookInfo;
+	String bookID;
 	String sessionInfos;
 
-	public Worker(String bookInfo, String sessionInfos, CyclicBarrier barrier) {
-		this.bookInfo = bookInfo;
+	public Worker(CyclicBarrier barrier) {
+
 		this.barrier = barrier;
-		this.sessionInfos = sessionInfos;
 	}
 
-	public Integer call() throws Exception {
-		Random random = new Random();
+	public OperationStatus call() throws Exception {
+		OperationStatus status = null;
 		try {
-			Thread.sleep((random.nextInt(10) * 1000));
-		} catch (InterruptedException e1) {
+			BookFetcher fetcher = new BookFetcher();
+			status = fetcher.execute();
+
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 
@@ -130,6 +98,6 @@ class Worker implements Callable<Integer> {
 		}
 
 		System.out.println("Barrier opened");
-		return 1;
+		return status;
 	}
 }

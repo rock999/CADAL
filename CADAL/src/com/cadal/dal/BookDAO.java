@@ -1,12 +1,15 @@
 package com.cadal.dal;
 
 import java.sql.Connection;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.MapHandler;
 
-import com.cadal.common.FileHelper;
+import com.cadal.model.BookInfo;
 
 public class BookDAO {
 
@@ -18,28 +21,31 @@ public class BookDAO {
 			30, 10000);
 
 	Connection getConnection() {
-		// Ê¹ÓÃÊı¾İÁ¬½Ó³Ø²úÉúÁ´½Ó
+		// ä½¿ç”¨æ•°æ®è¿æ¥æ± äº§ç”Ÿé“¾æ¥
 		return db.getConn();
 	}
 
 	public static void main(String[] args) {
 		BookDAO dbInstance = new BookDAO();
 
+		BookInfo book = dbInstance.getBookTask();
+		System.out.println(book.getBookID() + "#" + book.getBookIndex());
+
 		// for (int i = 0; i < 100; i++) {
 		// dbInstance.insertAccount("user" + i, "pass" + i);
 		// }
-		FileHelper helper = new FileHelper();
-		List<String> bookList = helper.ReadFileData("cadal1.txt", "UTF-8");
-		for (String bookInfo : bookList) {
-			// dbInstance.updateAccountStatus("user1", 4);
-			String[] infos = bookInfo.split("###");
-			dbInstance.insertBook(infos[0], infos[1], infos[2]);
-			System.out.println(bookInfo);
-		}
+		// FileHelper helper = new FileHelper();
+		// List<String> bookList = helper.ReadFileData("cadal1.txt", "UTF-8");
+		// for (String bookInfo : bookList) {
+		// // dbInstance.updateAccountStatus("user1", 4);
+		// String[] infos = bookInfo.split("###");
+		// dbInstance.insertBook(infos[0], infos[1], infos[2]);
+		// System.out.println(bookInfo);
+		// }
 	}
 
 	/***
-	 * Ôö¼ÓĞÂÕËºÅ
+	 * å¢åŠ æ–°è´¦å·
 	 * 
 	 * @param userName
 	 * @param passWord
@@ -69,7 +75,7 @@ public class BookDAO {
 	}
 
 	/***
-	 * ±ä¸üÍ¼Êé×´Ì¬
+	 * å˜æ›´å›¾ä¹¦çŠ¶æ€
 	 * 
 	 * @param userName
 	 * @param status
@@ -91,6 +97,52 @@ public class BookDAO {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+	}
+
+	/***
+	 * sync get book task
+	 * 
+	 * @return
+	 */
+	public synchronized BookInfo getBookTask() {
+
+		BookInfo bookInfo = new BookInfo();
+		Connection conn = getConnection();
+		// Create QueryRunner
+		QueryRunner queryRunner = new QueryRunner();
+		try {
+			// è¿”å›å•è¡Œè®°å½•ï¼Œä½¿ç”¨Map
+			// System.out.println("ä½¿ç”¨Mapå¤„ç†å•è¡Œè®°å½•ï¼");
+			Map<String, Object> map = queryRunner
+					.query(conn,
+							"select bookID,pageSize,topType as catalog from bookinfo where fileStatus=0 and topType='å¤ç±'  limit 1",
+							new MapHandler(), (Object[]) null);
+
+			for (Iterator<Entry<String, Object>> i = map.entrySet().iterator(); i
+					.hasNext();) {
+				Entry<String, Object> e = i.next();
+				System.out.println(e.getKey() + "=" + e.getValue());
+
+				if (e.getKey().toUpperCase().equals("BOOKID"))
+					bookInfo.setBookID(e.getValue().toString());
+				if (e.getKey().toUpperCase().equals("PAGESIZE"))
+					bookInfo.setBookIndex(Integer.valueOf(e.getValue()
+							.toString()));
+				if (e.getKey().toUpperCase().equals("CATALOG"))
+					bookInfo.setCatalog(e.getValue()
+							.toString());
+			}
+
+			// Close conn
+			DbUtils.closeQuietly(conn);
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			bookInfo = null;
+		}
+
+		return bookInfo;
 
 	}
 

@@ -1,12 +1,15 @@
 package com.cadal.dal;
 
 import java.sql.Connection;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.MapHandler;
 
-import com.cadal.common.FileHelper;
+import com.cadal.model.LogInfo;
 
 public class LoginDAO {
 
@@ -18,31 +21,32 @@ public class LoginDAO {
 			30, 10000);
 
 	Connection getConnection() {
-		// Ê¹ÓÃÊı¾İÁ¬½Ó³Ø²úÉúÁ´½Ó
+		// ä½¿ç”¨æ•°æ®è¿æ¥æ± äº§ç”Ÿé“¾æ¥
 		return db.getConn();
 	}
 
 	public static void main(String[] args) {
 		LoginDAO dbInstance = new LoginDAO();
 
+		dbInstance.getAccount();
 		// for (int i = 0; i < 100; i++) {
 		// dbInstance.insertAccount("user" + i, "pass" + i);
 		// }
 
-//		FileHelper helper = new FileHelper();
-//		List<String> bookList = helper.ReadFileData("reg.txt", "UTF-8");
-//		for (String account : bookList) {
-//			// dbInstance.updateAccountStatus("user1", 4);
-//			String[] infos = account.split("###");
-//			dbInstance.insertAccount(infos[0], infos[1]);
-//			System.out.println(account);
-//		}
+		// FileHelper helper = new FileHelper();
+		// List<String> bookList = helper.ReadFileData("reg.txt", "UTF-8");
+		// for (String account : bookList) {
+		// // dbInstance.updateAccountStatus("user1", 4);
+		// String[] infos = account.split("###");
+		// dbInstance.insertAccount(infos[0], infos[1]);
+		// System.out.println(account);
+		// }
 
 		// dbInstance.updateAccountStatus("user1", 4);
 	}
 
 	/***
-	 * Ôö¼ÓĞÂÕËºÅ
+	 * å¢åŠ æ–°è´¦å·
 	 * 
 	 * @param userName
 	 * @param passWord
@@ -72,7 +76,7 @@ public class LoginDAO {
 	}
 
 	/***
-	 * ±ä¸üÕËºÅ×´Ì¬
+	 * å˜æ›´è´¦å·çŠ¶æ€
 	 * 
 	 * @param userName
 	 * @param status
@@ -93,6 +97,39 @@ public class LoginDAO {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+	}
+
+	public LogInfo getAccount() {
+
+		LogInfo login = new LogInfo();
+		Connection conn = getConnection();
+		// Create QueryRunner
+		QueryRunner queryRunner = new QueryRunner();
+		try {
+			// è¿”å›å•è¡Œè®°å½•ï¼Œä½¿ç”¨Map
+			System.out.println("ä½¿ç”¨Mapå¤„ç†å•è¡Œè®°å½•ï¼");
+			Map<String, Object> map = queryRunner.query(conn,
+					"select userName,passWord from account where status=-1  limit 1",
+					new MapHandler(), (Object[]) null);
+
+			for (Iterator<Entry<String, Object>> i = map.entrySet().iterator(); i
+					.hasNext();) {
+				Entry<String, Object> e = i.next();
+				System.out.println(e.getKey() + "=" + e.getValue());
+				if (e.getKey().toUpperCase().equals("USERNAME"))
+					login.setUserName(e.getValue().toString());
+				if (e.getKey().toUpperCase().equals("PASSWORD"))
+					login.setPassWord(e.getValue().toString());
+			}
+
+			// Close conn
+			DbUtils.closeQuietly(conn);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return login;
 
 	}
 

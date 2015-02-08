@@ -12,27 +12,27 @@ public class FilterApp {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		File root = new File("Z:/ZJCrawlerResult/ZJCrawlerResult/Books/¹Å¼®");
+		File root = new File("Z:/ZJCrawlerResult/ZJCrawlerResult/Books/å¤ç±");
 		File[] files = root.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
 				System.out.println(file.getName());
-				long startTime = System.currentTimeMillis(); // »ñÈ¡¿ªÊ¼Ê±¼ä
+				long startTime = System.currentTimeMillis(); // è·å–å¼€å§‹æ—¶é—´
 
 				int size = file.listFiles().length;
 
-				long endTime = System.currentTimeMillis(); // »ñÈ¡½áÊøÊ±¼ä
+				long endTime = System.currentTimeMillis(); // è·å–ç»“æŸæ—¶é—´
 
-				System.out.println("size ³ÌĞòÔËĞĞÊ±¼ä£º" + (endTime - startTime)
-						+ "ms"); // Êä³ö³ÌĞòÔËĞĞÊ±¼ä
+				System.out.println("size ç¨‹åºè¿è¡Œæ—¶é—´ï¼š" + (endTime - startTime)
+						+ "ms"); // è¾“å‡ºç¨‹åºè¿è¡Œæ—¶é—´
 				System.out.println(size);
 
-				startTime = System.currentTimeMillis(); // »ñÈ¡¿ªÊ¼Ê±¼ä
+				startTime = System.currentTimeMillis(); // è·å–å¼€å§‹æ—¶é—´
 
 				dao.updateBookStatus(file.getName(), 1, size);
-				endTime = System.currentTimeMillis(); // »ñÈ¡½áÊøÊ±¼ä
-				System.out.println(" insert ³ÌĞòÔËĞĞÊ±¼ä£º" + (endTime - startTime)
-						+ "ms"); // Êä³ö³ÌĞòÔËĞĞÊ±¼ä
+				endTime = System.currentTimeMillis(); // è·å–ç»“æŸæ—¶é—´
+				System.out.println(" insert ç¨‹åºè¿è¡Œæ—¶é—´ï¼š" + (endTime - startTime)
+						+ "ms"); // è¾“å‡ºç¨‹åºè¿è¡Œæ—¶é—´
 
 			}
 		}

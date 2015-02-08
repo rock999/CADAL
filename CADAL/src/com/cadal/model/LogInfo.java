@@ -4,14 +4,33 @@ import java.io.Serializable;
 
 public class LogInfo implements Serializable {
 
-	// -1:Î´ÑéÖ¤
-	// ÑéÖ¤
-	// 1:ÑéÖ¤¿ÉÓÃ£¨ÒÑÓÃ£©
-	// 2:ÑéÖ¤²»¿ÉÓÃ_Î´×¢²á
-	// 3:ÑéÖ¤²»¿ÉÓÃ_Î´¼¤»î
+	// -1:æœªéªŒè¯
+	// éªŒè¯
+	// 1:éªŒè¯å¯ç”¨ï¼ˆå·²ç”¨ï¼‰
+	// 2:éªŒè¯ä¸å¯ç”¨_æœªæ³¨å†Œ
+	// 3:éªŒè¯ä¸å¯ç”¨_æœªæ¿€æ´»
 	public static int STAT_UNUSED = -1;
 	public static int STAT_USED = 1;
 	public static int STAT_USED_UNREG = 2;
 	public static int STAT_USED_UNACT = 3;
+
+	String userName;
+	String passWord;
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassWord() {
+		return passWord;
+	}
+
+	public void setPassWord(String passWord) {
+		this.passWord = passWord;
+	}
 
 }

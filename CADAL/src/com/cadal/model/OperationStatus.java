@@ -1,16 +1,20 @@
 package com.cadal.model;
+
 public class OperationStatus {
 
 	// outOfBound:1 operationFailed:-1 InvalidAccount:-100 NogLogin:-2
+	public static int SUCESSED = 1;
 	public static int COMMONFAILED = -1;
 	public static int INVALIDACCOUNT = -100;
 	public static int INVALIDIP = -200;
 	public static int NOTLOGIN = -2;
-	public static int OUTOFBOUND = -1;
+	public static int OUTOFBOUND = 1;
 
-	// 操作状态
+	// opera result
+	public Object result = 0;
+	// opera status
 	int status = 0;
-	// 提示信息
+	// opera message result
 	String message;
 
 	public int getStatus() {
