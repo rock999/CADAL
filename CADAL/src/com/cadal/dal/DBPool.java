@@ -13,14 +13,14 @@ import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 /**
  * @author haiming.yin dbcp
  * 
- *         ÊµÓÃÀà£¬Ìá¹©ÁËdbcpÁ¬½Ó£¬²»ÔÊĞí¼Ì³Ğ£» ¸ÃÀàĞèÒªÓĞ¸öµØ·½À´³õÊ¼»¯ DS £¬Í¨¹ıµ÷ÓÃinitDS ·½·¨À´Íê³É£¬
- *         ¿ÉÒÔÔÚÍ¨¹ıµ÷ÓÃ´ø²ÎÊıµÄ¹¹Ôìº¯ÊıÍê³Éµ÷ÓÃ£¬ ¿ÉÒÔÔÚÆäËüÀàÖĞµ÷ÓÃ£¬Ò²¿ÉÒÔÔÚ±¾ÀàÖĞ¼ÓÒ»¸östatic{}À´Íê³É£»
+ *         å®ç”¨ç±»ï¼Œæä¾›äº†dbcpè¿æ¥ï¼Œä¸å…è®¸ç»§æ‰¿ï¼› è¯¥ç±»éœ€è¦æœ‰ä¸ªåœ°æ–¹æ¥åˆå§‹åŒ– DS ï¼Œé€šè¿‡è°ƒç”¨initDS æ–¹æ³•æ¥å®Œæˆï¼Œ
+ *         å¯ä»¥åœ¨é€šè¿‡è°ƒç”¨å¸¦å‚æ•°çš„æ„é€ å‡½æ•°å®Œæˆè°ƒç”¨ï¼Œ å¯ä»¥åœ¨å…¶å®ƒç±»ä¸­è°ƒç”¨ï¼Œä¹Ÿå¯ä»¥åœ¨æœ¬ç±»ä¸­åŠ ä¸€ä¸ªstatic{}æ¥å®Œæˆï¼›
  */
 public final class DBPool {
-	/** Êı¾İÔ´£¬static */
+	/** æ•°æ®æºï¼Œstatic */
 	private static DataSource DS;
 
-	/** ´ÓÊı¾İÔ´»ñµÃÒ»¸öÁ¬½Ó */
+	/** ä»æ•°æ®æºè·å¾—ä¸€ä¸ªè¿æ¥ */
 	public Connection getConn() {
 		Connection con = null;
 		if (DS != null) {
@@ -40,17 +40,17 @@ public final class DBPool {
 		return con;
 	}
 
-	/** Ä¬ÈÏµÄ¹¹Ôìº¯Êı */
+	/** é»˜è®¤çš„æ„é€ å‡½æ•° */
 	public DBPool() {
 	}
 
-	/** ¹¹Ôìº¯Êı£¬³õÊ¼»¯ÁË DS £¬Ö¸¶¨ Êı¾İ¿â */
+	/** æ„é€ å‡½æ•°ï¼Œåˆå§‹åŒ–äº† DS ï¼ŒæŒ‡å®š æ•°æ®åº“ */
 	public DBPool(String connectURI) {
 		initDS(connectURI);
 	}
 
 
-	/** ¹¹Ôìº¯Êı£¬³õÊ¼»¯ÁË DS £¬Ö¸¶¨ ËùÓĞ²ÎÊı */
+	/** æ„é€ å‡½æ•°ï¼Œåˆå§‹åŒ–äº† DS ï¼ŒæŒ‡å®š æ‰€æœ‰å‚æ•° */
 	public DBPool(String connectURI, String username, String pswd,
 			String driverClass, int initialSize, int maxActive, int maxIdle,
 			int maxWait) {
@@ -59,10 +59,10 @@ public final class DBPool {
 	}
 
 	/**
-	 * ´´½¨Êı¾İÔ´£¬³ıÁËÊı¾İ¿âÍâ£¬¶¼Ê¹ÓÃÓ²±àÂëÄ¬ÈÏ²ÎÊı£»
+	 * åˆ›å»ºæ•°æ®æºï¼Œé™¤äº†æ•°æ®åº“å¤–ï¼Œéƒ½ä½¿ç”¨ç¡¬ç¼–ç é»˜è®¤å‚æ•°ï¼›
 	 * 
 	 * @param connectURI
-	 *            Êı¾İ¿â
+	 *            æ•°æ®åº“
 	 * @return
 	 */
 	public static void initDS(String connectURI) {
@@ -72,24 +72,24 @@ public final class DBPool {
 	}
 
 	/**
-	 * Ö¸¶¨ËùÓĞ²ÎÊıÁ¬½ÓÊı¾İÔ´
+	 * æŒ‡å®šæ‰€æœ‰å‚æ•°è¿æ¥æ•°æ®æº
 	 * 
 	 * @param connectURI
-	 *            Êı¾İ¿â
+	 *            æ•°æ®åº“
 	 * @param username
-	 *            ÓÃ»§Ãû
+	 *            ç”¨æˆ·å
 	 * @param pswd
-	 *            ÃÜÂë
+	 *            å¯†ç 
 	 * @param driverClass
-	 *            Êı¾İ¿âÁ¬½ÓÇı¶¯Ãû
+	 *            æ•°æ®åº“è¿æ¥é©±åŠ¨å
 	 * @param initialSize
-	 *            ³õÊ¼Á¬½Ó³ØÁ¬½Ó¸öÊı
+	 *            åˆå§‹è¿æ¥æ± è¿æ¥ä¸ªæ•°
 	 * @param maxActive
-	 *            ×î´ó¼¤»îÁ¬½ÓÊı
+	 *            æœ€å¤§æ¿€æ´»è¿æ¥æ•°
 	 * @param maxIdle
-	 *            ×î´óÏĞÖÃÁ¬½ÓÊı
+	 *            æœ€å¤§é—²ç½®è¿æ¥æ•°
 	 * @param maxWait
-	 *            »ñµÃÁ¬½ÓµÄ×î´óµÈ´ıºÁÃëÊı
+	 *            è·å¾—è¿æ¥çš„æœ€å¤§ç­‰å¾…æ¯«ç§’æ•°
 	 * @return
 	 */
 	public static void initDS(String connectURI, String username, String pswd,
@@ -100,14 +100,14 @@ public final class DBPool {
 		ds.setUsername(username);
 		ds.setPassword(pswd);
 		ds.setUrl(connectURI);
-		ds.setInitialSize(initialSize); // ³õÊ¼µÄÁ¬½ÓÊı£»
+		ds.setInitialSize(initialSize); // åˆå§‹çš„è¿æ¥æ•°ï¼›
 		ds.setMaxActive(maxActive);
 		ds.setMaxIdle(maxIdle);
 		ds.setMaxWait(maxWait);
 		DS = ds;
 	}
 
-	/** »ñµÃÊı¾İÔ´Á¬½Ó×´Ì¬ */
+	/** è·å¾—æ•°æ®æºè¿æ¥çŠ¶æ€ */
 	public static Map<String, Integer> getDataSourceStats() throws SQLException {
 		BasicDataSource bds = (BasicDataSource) DS;
 		Map<String, Integer> map = new HashMap<String, Integer>(2);
@@ -116,7 +116,7 @@ public final class DBPool {
 		return map;
 	}
 
-	/** ¹Ø±ÕÊı¾İÔ´ */
+	/** å…³é—­æ•°æ®æº */
 	protected static void shutdownDataSource() throws SQLException {
 		BasicDataSource bds = (BasicDataSource) DS;
 		bds.close();

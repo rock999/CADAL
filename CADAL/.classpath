@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="com/cadal/core/HttpConnectionManager.java|com/cadal/core/CopyOfCADALCrawler.java|com/cadal/dal/AnsyTaskDAO.java|com/cadal/dal/ServiceItemDAO.java|com/cadal/model/AnsyResultItem.java|com/cadal/model/AnsyStatusItem.java|com/cadal/model/ServiceItem.java" kind="src" path="src"/>
+	<classpathentry excluding="com/cadal/core/HttpConnectionManager.java|com/cadal/core/CopyOfCADALCrawler.java|com/cadal/dal/AnsyTaskDAO.java|com/cadal/dal/ServiceItemDAO.java|com/cadal/model/AnsyResultItem.java|com/cadal/model/AnsyStatusItem.java|com/cadal/model/ServiceItem.java|com/cadal/core/CADALCrawlerMultT.java" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>

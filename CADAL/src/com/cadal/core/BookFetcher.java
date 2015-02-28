@@ -16,6 +16,7 @@ import com.cadal.common.DecryptTools;
 import com.cadal.common.FileHelper;
 import com.cadal.common.IPTools;
 import com.cadal.common.LoginTools;
+import com.cadal.common.TaskTools;
 import com.cadal.common.TimeUtility;
 import com.cadal.dal.BookDAO;
 import com.cadal.model.BookInfo;
@@ -25,8 +26,8 @@ public class BookFetcher {
 	static FileHelper fileHelper = new FileHelper();
 	static BookDAO bookDB = new BookDAO();
 
-	static List<String> bookIDList = fileHelper.ReadFileData("list.txt",
-			"UTF-8");
+//	static List<String> bookIDList = fileHelper.ReadFileData("list.txt",
+//			"UTF-8");
 	public String cookies = "";
 	public static String BASEDIR = "H:/fuckData";
 
@@ -59,7 +60,12 @@ public class BookFetcher {
 	public OperationStatus execute() {
 		this.cookies = LoginTools.activeAccountCookies();
 		while (true) {
-			BookInfo book = bookDB.getBookTask();
+			BookInfo book = TaskTools.getTask();
+			if (book == null) {
+				System.out.println("未接到合法任务，退出！");
+				break;
+			}
+
 			OperationStatus result = fetchBookPages(book.getCatalog(),
 					book.getBookID(), book.getBookIndex());
 
@@ -97,7 +103,9 @@ public class BookFetcher {
 
 				// sleep 30 sec current thread
 				try {
-					Thread.sleep(10000);
+					Thread.sleep(15000);
+					//变更ip后变更用户登陆 
+					cookies = LoginTools.activeAccountCookies();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

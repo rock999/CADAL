@@ -28,7 +28,7 @@ public class IPTools {
 
 		// 计算变更间隔，如果六十秒之间则不变更
 		long currentTime = System.currentTimeMillis();
-		if ((currentTime - lastTime) < 60000)
+		if ((currentTime - lastTime) < 90000)
 			return true;
 
 		lastTime = currentTime;
