@@ -13,7 +13,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 
 import com.cadal.common.DecryptTools;
 import com.cadal.common.FileHelper;
-import com.cadal.common.IPTools;
+import com.cadal.common.NetTools;
 import com.cadal.common.LoginTools;
 import com.cadal.model.OperationStatus;
 
@@ -72,7 +72,7 @@ public class CopyOfBookFetcher {
 			if (OperationStatus.INVALIDIP == flagNum) {
 
 				// sync switch ip
-				IPTools.switchIP("http://192.168.1.1/userRpm/StatusRpm.htm?Disconnect=%B6%CF%20%CF%DF&wan=1");
+				NetTools.switchIP("http://192.168.1.1/userRpm/StatusRpm.htm?Disconnect=%B6%CF%20%CF%DF&wan=1");
 
 				// sleep 20 sec current thread
 				try {

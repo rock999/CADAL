@@ -14,7 +14,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 
 import com.cadal.common.DecryptTools;
 import com.cadal.common.FileHelper;
-import com.cadal.common.IPTools;
+import com.cadal.common.NetTools;
 import com.cadal.common.LoginTools;
 import com.cadal.common.TaskTools;
 import com.cadal.common.TimeUtility;
@@ -26,8 +26,8 @@ public class BookFetcher {
 	static FileHelper fileHelper = new FileHelper();
 	static BookDAO bookDB = new BookDAO();
 
-//	static List<String> bookIDList = fileHelper.ReadFileData("list.txt",
-//			"UTF-8");
+	// static List<String> bookIDList = fileHelper.ReadFileData("list.txt",
+	// "UTF-8");
 	public String cookies = "";
 	public static String BASEDIR = "H:/fuckData";
 
@@ -97,18 +97,20 @@ public class BookFetcher {
 			if (OperationStatus.INVALIDIP == flagNum) {
 
 				// sync switch ip,break out of loop if failed
-				if (!IPTools
+				if (!NetTools
 						.switchIP("http://192.168.1.1/userRpm/StatusRpm.htm?Disconnect=%B6%CF%20%CF%DF&wan=1"))
 					break;
 
+				break;
+
 				// sleep 30 sec current thread
-				try {
-					Thread.sleep(15000);
-					//变更ip后变更用户登陆 
-					cookies = LoginTools.activeAccountCookies();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				// try {
+				// Thread.sleep(15000);
+				// // 变更ip后变更用户登陆
+				// cookies = LoginTools.activeAccountCookies();
+				// } catch (InterruptedException e) {
+				// e.printStackTrace();
+				// }
 			}
 
 			// check account cookies
@@ -222,16 +224,25 @@ public class BookFetcher {
 				String pageContent = fileHelper.readDataFromFile(
 						file.getAbsolutePath(), "UTF-8");
 
-				// check ip status 2
-				if (pageContent
-						.indexOf("ddddddddddddddddddddddddddddddddddddddddddddd") >= 0) {
-					cookieAvailable = false;
+				// whether ip enable
+				if (pageContent.trim().equals(
+						"dddddddddddddddddddddddddddddddd")) {
+					// cookieAvailable = false;
 					operaStatus.setStatus(OperationStatus.INVALIDIP);
 					operaStatus.setMessage("invalid ip status!");
 					return operaStatus;
 				}
 
-				// check cookie status
+				// whether logined
+				if (pageContent
+						.equals("ddddddddddddddddddddddddddddddddddddddddddddd")) {
+					operaStatus.setStatus(OperationStatus.INVALIDACCOUNT);
+					operaStatus.setMessage("invalid account status!");
+					cookieAvailable = false;
+					return operaStatus;
+				}
+
+				// whether failed cookie 
 				if (pageContent.indexOf("Grilled data shameful") >= 0) {
 					operaStatus.setStatus(OperationStatus.INVALIDACCOUNT);
 					operaStatus.setMessage("invalid account status!");
