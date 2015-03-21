@@ -30,7 +30,7 @@ public class CADALCrawler {
 }
 
 class CADALScheduler {
-	int ThreadMaxSize = 3;
+	int ThreadMaxSize =5;
 	CyclicBarrier barrier = null;
 	static FileHelper fileHelper = new FileHelper();
 

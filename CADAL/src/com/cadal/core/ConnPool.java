@@ -16,8 +16,8 @@ public class ConnPool {
 		cm.setDefaultMaxPerRoute(20);
 
 		RequestConfig config = RequestConfig.custom()
-				.setConnectionRequestTimeout(50000).setConnectTimeout(50000)
-				.setSocketTimeout(60000).setExpectContinueEnabled(true)
+				.setConnectionRequestTimeout(20000).setConnectTimeout(20000)
+				.setSocketTimeout(20000).setExpectContinueEnabled(true)
 				.setStaleConnectionCheckEnabled(true).build();
 
 		return HttpClients.custom().setDefaultRequestConfig(config)

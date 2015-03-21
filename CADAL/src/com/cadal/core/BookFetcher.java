@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -14,8 +13,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 
 import com.cadal.common.DecryptTools;
 import com.cadal.common.FileHelper;
-import com.cadal.common.NetTools;
 import com.cadal.common.LoginTools;
+import com.cadal.common.NetTools;
 import com.cadal.common.TaskTools;
 import com.cadal.common.TimeUtility;
 import com.cadal.dal.BookDAO;
@@ -29,7 +28,7 @@ public class BookFetcher {
 	// static List<String> bookIDList = fileHelper.ReadFileData("list.txt",
 	// "UTF-8");
 	public String cookies = "";
-	public static String BASEDIR = "H:/fuckData";
+	public static String BASEDIR = "D:/CADALData";
 
 	public boolean cookieAvailable = false;
 
@@ -97,11 +96,11 @@ public class BookFetcher {
 			if (OperationStatus.INVALIDIP == flagNum) {
 
 				// sync switch ip,break out of loop if failed
-				if (!NetTools
-						.switchIP("http://192.168.1.1/userRpm/StatusRpm.htm?Disconnect=%B6%CF%20%CF%DF&wan=1"))
-					break;
+				// if (!NetTools
+				// .switchIP("http://192.168.1.1/userRpm/StatusRpm.htm?Disconnect=%B6%CF%20%CF%DF&wan=1"))
+				// break;
 
-				break;
+				NetTools.switchIP("http://192.168.1.1/userRpm/StatusRpm.htm?Disconnect=%B6%CF%20%CF%DF&wan=1");
 
 				// sleep 30 sec current thread
 				// try {
@@ -111,12 +110,21 @@ public class BookFetcher {
 				// } catch (InterruptedException e) {
 				// e.printStackTrace();
 				// }
+
 			}
 
 			// check account cookies
 			if (OperationStatus.INVALIDACCOUNT == flagNum) {
 				cookies = LoginTools.activeAccountCookies();
 			}
+
+			// Thread.wait
+			// try {
+			// Thread.currentThread().sleep(100);
+			// } catch (InterruptedException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
 		}
 
 		return null;
@@ -185,15 +193,22 @@ public class BookFetcher {
 				response = httpclient.execute(httpget);
 			} catch (Exception e) {
 				e.printStackTrace();
-				operaStatus.setStatus(OperationStatus.COMMONFAILED);
-				operaStatus.setMessage(e.getMessage());
+
+				// operaStatus.setStatus(OperationStatus.COMMONFAILED);
+				// operaStatus.setMessage(e.getMessage());
+
+				// timeout deal with swithing ip
+				cookieAvailable = false;
+				operaStatus.setStatus(OperationStatus.INVALIDIP);
+				operaStatus.setMessage("invalid ip status!");
 				return operaStatus;
 			}
 
 			HttpEntity entity = response.getEntity();
 
 			// check ip status 1
-			if (response.getStatusLine().getStatusCode() == 403) {
+			if (response.getStatusLine().getStatusCode() == 403
+					|| response.getStatusLine().getStatusCode() == 502) {
 				cookieAvailable = false;
 				operaStatus.setStatus(OperationStatus.INVALIDIP);
 				operaStatus.setMessage("invalid ip status!");
@@ -216,8 +231,13 @@ public class BookFetcher {
 
 				} catch (Exception e) {
 					e.printStackTrace();
-					operaStatus.setStatus(OperationStatus.COMMONFAILED);
-					operaStatus.setMessage(e.getMessage());
+					// timeout deals with switching ip
+					// operaStatus.setStatus(OperationStatus.COMMONFAILED);
+					// operaStatus.setMessage(e.getMessage());
+					cookieAvailable = false;
+					operaStatus.setStatus(OperationStatus.INVALIDIP);
+					operaStatus.setMessage("invalid ip status!");
+					return operaStatus;
 
 				}
 
@@ -226,7 +246,10 @@ public class BookFetcher {
 
 				// whether ip enable
 				if (pageContent.trim().equals(
-						"dddddddddddddddddddddddddddddddd")) {
+						"dddddddddddddddddddddddddddddddd")
+						|| pageContent
+								.trim()
+								.equals("ddddddddddddddddddddddddddddddddddddddddddddddddddddddd")) {
 					// cookieAvailable = false;
 					operaStatus.setStatus(OperationStatus.INVALIDIP);
 					operaStatus.setMessage("invalid ip status!");
@@ -234,6 +257,9 @@ public class BookFetcher {
 				}
 
 				// whether logined
+				// ddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+				// ddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+				// ddddddddddddddddddddddddddddddddddddddddddddd
 				if (pageContent
 						.equals("ddddddddddddddddddddddddddddddddddddddddddddd")) {
 					operaStatus.setStatus(OperationStatus.INVALIDACCOUNT);
@@ -242,7 +268,7 @@ public class BookFetcher {
 					return operaStatus;
 				}
 
-				// whether failed cookie 
+				// whether failed cookie
 				if (pageContent.indexOf("Grilled data shameful") >= 0) {
 					operaStatus.setStatus(OperationStatus.INVALIDACCOUNT);
 					operaStatus.setMessage("invalid account status!");
@@ -279,7 +305,24 @@ public class BookFetcher {
 				DecryptTools.decryptFile(BASEDIR + "/" + catelog + "/" + bookID
 						+ "/", String.valueOf(pageID), openKey);
 
-				// Thread.sleep(1500);
+				// check decrypted file
+				String content = fileHelper.readDataFromFile(
+						BASEDIR + "/" + catelog + "/" + bookID + "/"
+								+ String.valueOf(pageID)+".jpg", "UTF8");
+				
+				if (content.indexOf("AT&TFORM") >= 0) {
+					operaStatus.setStatus(OperationStatus.INVALIDIP);
+					operaStatus.setMessage("invalid ip status!");
+					//cookieAvailable = false;
+					return operaStatus;
+				}
+
+				try {
+					Thread.sleep(1500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 
